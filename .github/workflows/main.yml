@@ -1,0 +1,23 @@
+name: A workflow for building rewrite 
+on: push
+
+jobs:
+  build:
+    name: Build all
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.17.3' # The Go version to download (if necessary) and use.
+    - run: make all
+    - name: Create Release
+      if: contains(github.ref, 'tags')
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/bin/*
+        file_glob: true
+        tag: ${{ github.ref }}
+
+
